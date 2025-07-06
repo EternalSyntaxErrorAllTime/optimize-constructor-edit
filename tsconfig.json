@@ -18,8 +18,20 @@
         "name": "next"
       }
     ],
+    "baseUrl": "./",
     "paths": {
-      "@/*": ["./src/*"]
+      "@icons/*": ["public/icons/*"],
+      "@image/*": ["public/image/*"],
+
+      "@components/*": ["src/components/*"],
+      "@redux/*": ["src/redux/*"],
+      "@styles/*": ["src/styles/*"],
+
+      // DataBase features
+      "@database/*": ["src/server-actions/database/*"],
+
+      // ??? maybe delete next
+      "@routerLinks": ["src/components/HeaderWebSite/routerLinks.ts"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
