@@ -1,0 +1,24 @@
+#DisplayAlert {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  gap: 10px;
+
+  z-index: 999;
+  position: fixed;
+
+  min-width: 520px;
+  height: auto;
+  width: auto;
+  bottom: 20px;
+  right: 20px;
+  padding-left: 20px;
+
+  @media (max-width: 550px) {
+    min-width: auto;
+  }
+
+  .alert {
+    height: auto;
+  }
+}
