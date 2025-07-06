@@ -1,0 +1,14 @@
+%SvgForText {
+  svg {
+    width: 100%;
+    height: 100%;
+
+    *[fill]:not([fill=""]) {
+      fill: var(--mui-palette-text-primary);
+    }
+
+    *[stroke]:not([stroke=""]) {
+      stroke: var(--mui-palette-text-primary);
+    }
+  }
+}

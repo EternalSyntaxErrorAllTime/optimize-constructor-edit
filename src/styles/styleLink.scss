@@ -1,0 +1,72 @@
+%linkLineFromCenter {
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+
+  &::before {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 1.5px;
+    bottom: -3px;
+    left: 0;
+
+    background-color: currentColor;
+    border-radius: 100px;
+
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  @media (pointer: fine) and (hover: hover) {
+    &:hover::before {
+      transform: scaleX(1);
+    }
+  }
+
+  @media (pointer: coarse) and (hover: none) {
+    &:focus::before {
+      transform: scaleX(1);
+    }
+  }
+}
+
+%linkLineActive {
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+
+  &::before {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 1.5px;
+    bottom: -3px;
+    left: 0;
+
+    background-color: currentColor;
+    border-radius: 100px;
+    transform: scaleX(1);
+  }
+}
+
+%ofLinkLine {
+  &::before {
+    content: "";
+    transform: scaleX(0);
+  }
+
+  @media (pointer: fine) and (hover: hover) {
+    &:hover::before {
+      transform: scaleX(0);
+    }
+  }
+
+  @media (pointer: coarse) and (hover: none) {
+    &:focus::before {
+      transform: scaleX(0);
+    }
+  }
+}
