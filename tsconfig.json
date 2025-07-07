@@ -27,11 +27,7 @@
       "@redux/*": ["src/redux/*"],
       "@styles/*": ["src/styles/*"],
 
-      // DataBase features
-      "@database/*": ["src/server-actions/database/*"],
-
-      // ??? maybe delete next
-      "@routerLinks": ["src/components/HeaderWebSite/routerLinks.ts"]
+      "@database/*": ["src/server-actions/database/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
