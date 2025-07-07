@@ -1,0 +1,52 @@
+@use "@styles/status" as status;
+
+.ResultSearchCard {
+  width: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+
+  .noHaveData {
+    @extend %noHaveData;
+  }
+
+  @media (max-width: 950px) {
+    padding: 0 5px;
+  }
+
+  @media (max-width: 450px) {
+    padding: 0 3px;
+  }
+
+  .header {
+    font-weight: 700;
+    background-color: var(--mui-palette-background-default);
+  }
+
+  .list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 50px;
+    width: 100%;
+    height: 100%;
+    padding: 0 15px;
+
+    @media (max-width: 950px) {
+      padding: 0px 5px;
+    }
+    @media (max-width: 450px) {
+      padding: 0 3px;
+    }
+  }
+
+  .paginationPlace {
+    margin: 0 auto;
+    margin-top: 20px;
+  }
+}
