@@ -1,0 +1,90 @@
+@use "@styles/styleLink" as styleLink;
+
+.HeaderWebSite {
+  a {
+    color: var(--mui-palette-primary-contrastText);
+  }
+
+  #user span {
+    font-size: 14px;
+  }
+
+  .userElement {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .logoWebSite {
+    height: 32px;
+
+    svg {
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 1/1;
+      path {
+        fill: var(--mui-palette-primary-contrastText);
+      }
+    }
+  }
+
+  .customSVG path {
+    fill: var(--mui-palette-primary-contrastText);
+  }
+
+  .navElement {
+    @extend %elementItemNav;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    align-items: center;
+    padding: 0 15px;
+
+    .active {
+      @extend %linkLineActive;
+    }
+  }
+}
+
+.listMenu {
+  @extend %elementItemNav;
+  padding: 30px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  align-items: center;
+  height: 100%;
+
+  a {
+    color: var(--mui-palette-primary-main);
+  }
+
+  .active {
+    color: var(--mui-palette-primary-main);
+    @extend %linkLineActive;
+  }
+
+  .customSVG path {
+    fill: var(--mui-palette-primary-main);
+  }
+
+  .spacer {
+    height: 100%;
+  }
+}
+
+.customSVG {
+  height: 16px;
+  width: auto;
+}
+
+%elementItemNav {
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+}
