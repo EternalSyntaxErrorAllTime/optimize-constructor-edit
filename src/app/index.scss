@@ -1,0 +1,52 @@
+@use "@styles/styleLink" as styleLink;
+
+body {
+  font-family: var(--font-roboto);
+
+  display: flex;
+  gap: 50px;
+  flex-direction: column;
+
+  main {
+    padding: 80px 160px 10px 160px;
+
+    @media (max-width: 1300px) {
+      padding: 70px 130px 10px 130px;
+    }
+    @media (max-width: 1000px) {
+      padding: 60px 110px 10px 110px;
+    }
+    @media (max-width: 850px) {
+      padding: 50px 80px 10px 80px;
+    }
+    @media (max-width: 650px) {
+      padding: 50px 30px 10px 30px;
+    }
+    @media (max-width: 550px) {
+      padding: 40px 15px 10px 15px;
+    }
+    @media (max-width: 455px) {
+      padding: 30px 10px 10px 10px;
+    }
+  }
+
+  *,
+  button,
+  input {
+    font-family: var(--font-roboto);
+  }
+
+  a {
+    @extend %linkLineFromCenter;
+  }
+}
+
+#PageIndex {
+  display: flex;
+  flex-direction: column;
+  gap: 100px;
+
+  @media (max-width: 950px) {
+    gap: 60px;
+  }
+}
