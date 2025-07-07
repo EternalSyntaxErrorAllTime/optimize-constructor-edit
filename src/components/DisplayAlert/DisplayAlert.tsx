@@ -52,7 +52,7 @@ const DisplayAlert: FC = () => {
         <Collapse key={item.id}>
           <Alert
             className="alert"
-            security={item.severity}
+            severity={item.severity}
             action={
               <IconButton
                 aria-label="close"
