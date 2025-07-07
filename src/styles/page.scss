@@ -1,0 +1,36 @@
+@use "@styles/styleLink" as styleLink;
+
+#ErrorPage {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 500px auto;
+  gap: 20px;
+  grid-template-areas:
+    "title"
+    "error"
+    "containerButton";
+  justify-items: center;
+  text-align: center;
+
+  .title {
+    grid-area: title;
+    font-weight: 900;
+  }
+  .error {
+    grid-area: error;
+    font-weight: 700;
+  }
+  .containerButton {
+    grid-area: containerButton;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .toMainPage {
+    @extend %ofLinkLine;
+  }
+}
