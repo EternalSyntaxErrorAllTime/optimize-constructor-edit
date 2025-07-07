@@ -1,0 +1,80 @@
+@use "@styles/styleLink" as styleLink;
+@use "@styles/styleSVG" as styleSVG;
+
+.ItemCard {
+  height: 120px;
+  min-height: 120px;
+  width: 100%;
+
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto 1fr;
+  gap: 2px 15px;
+  grid-template-areas:
+    "mainInfo elementButton"
+    "description elementButton";
+  align-items: center;
+  overflow: hidden;
+
+  border: solid var(--mui-palette-text-secondary) 2px;
+  border-radius: 10px;
+  padding: 10px 15px 10px 10px;
+  box-sizing: border-box;
+
+  &:has(.iconDetail) {
+    grid-template-columns: 100px 1fr auto;
+    grid-template-areas:
+      "iconDetail mainInfo elementButton"
+      "iconDetail description elementButton";
+  }
+
+  .iconDetail {
+    @extend %SvgForText;
+    grid-area: iconDetail;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+
+  .mainInfo {
+    grid-area: mainInfo;
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    align-items: center;
+    font-weight: 700;
+
+    @media (max-width: 450px) {
+      h1,
+      h2 {
+        font-size: 16.5px;
+      }
+    }
+  }
+
+  .description {
+    grid-area: description;
+    width: 100%;
+    height: 100%;
+
+    display: -webkit-box;
+    line-clamp: 3;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  .elementButton {
+    @extend %ofLinkLine;
+    grid-area: elementButton;
+    margin-left: 5px;
+  }
+
+  .iconButton {
+    border-radius: 10px;
+    min-width: 38px;
+    aspect-ratio: 1/1;
+    padding: 4px 5px;
+  }
+}
