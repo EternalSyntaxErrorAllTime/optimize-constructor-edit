@@ -6,6 +6,13 @@ export type PropsLayout = {
 
 export type TypeLayout = FC<PropsLayout>;
 
+export type PropsErrorPage = {
+  error: Error & { digest?: string };
+  reset: () => void;
+};
+
+export type TypeErrorPage = FC<PropsErrorPage>;
+
 // next-auth.d.ts
 import type { DefaultUser } from "next-auth";
 
@@ -14,14 +21,14 @@ declare module "next-auth" {
   interface Session {
     user: {
       id: string;
-      name: string ;
+      name: string;
     };
   }
 
   // 2) Расширяем интерфейс User (если где-то используете User)
   interface User extends DefaultUser {
     id: string;
-    name: string ;
+    name: string;
   }
 }
 
