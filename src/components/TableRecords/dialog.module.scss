@@ -1,0 +1,102 @@
+@use "@styles/special" as styleSpecial;
+
+.containerDialog {
+  min-width: 500px;
+  min-height: 150px;
+
+  @media (max-width: 550px) {
+    min-width: auto;
+  }
+}
+
+.itemDelete {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+}
+
+.addOutput {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 5px;
+  align-items: center;
+  grid-template-areas:
+    "numberCard copyNumberCard"
+    "cardName copyCardName";
+
+  @include styleSpecial.HoverColorChangesOtherElement(
+    ".copyNumberCard",
+    ".numberCard"
+  );
+
+  @include styleSpecial.HoverColorChangesOtherElement(
+    ".copyCardName",
+    ".cardName"
+  );
+
+  .copyCardName {
+    grid-area: copyCardName;
+    min-width: 32px;
+    max-width: 32px;
+    aspect-ratio: 1/1;
+    margin-left: auto;
+    border: none;
+  }
+
+  .cardName {
+    grid-area: cardName;
+    font-weight: 700;
+  }
+
+  .numberCard {
+    grid-area: numberCard;
+    font-weight: 700;
+  }
+
+  .copyNumberCard {
+    grid-area: copyNumberCard;
+    min-width: 32px;
+    max-width: 32px;
+    aspect-ratio: 1/1;
+    margin-left: auto;
+    border: none;
+  }
+}
+
+.addNewDetail {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 2.2fr 1fr;
+  grid-template-rows: 1fr auto;
+  gap: 20px 10px;
+  grid-template-areas:
+    "nameDetail suffix"
+    "comment comment";
+
+  @media (max-width: 550px) {
+    grid-template-columns: 1.45fr 1fr;
+  }
+
+  .nameDetail {
+    grid-area: nameDetail;
+  }
+  .suffix {
+    grid-area: suffix;
+  }
+  .comment {
+    grid-area: comment;
+  }
+}
+
+.textEdit {
+  margin-top: 15px;
+}
+
+.textCell {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
