@@ -1,0 +1,21 @@
+/// Миксин: плавный переход цвета при hover на вложенной кнопке
+/// $trigger — селектор «кнопки» 
+/// $target — селектор изменяемого элемента внутри контейнера
+/// $color — цвет при hover (по умолчанию primary)
+@mixin HoverColorChangesOtherElement(
+  $trigger,
+  $target,
+  $color: var(--mui-palette-primary-main)
+) {
+  // стили для цели
+  #{$target} {
+    transition: color 0.3s ease-in-out;
+  }
+
+  // при hover на кнопке внутри wrapper
+  &:has(#{$trigger}:hover) {
+    #{$target} {
+      color: $color;
+    }
+  }
+}
