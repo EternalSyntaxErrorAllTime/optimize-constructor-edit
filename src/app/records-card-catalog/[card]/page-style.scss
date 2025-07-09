@@ -1,0 +1,69 @@
+@use "@styles/styleSVG" as styleSVG;
+@use "@styles/special" as styleSpecial;
+
+#RecordsCardCatalog {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+
+  .containerMainInfo {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto fit-content(120px);
+    gap: 8px 12px;
+    grid-template-areas:
+      "name numberCard"
+      "description description";
+
+    &:has(.iconDetail) {
+      grid-template-columns: 130px auto 1fr;
+      grid-template-rows: auto fit-content(120px);
+      grid-template-areas:
+        "iconDetail name numberCard"
+        "description description description";
+
+      @media (max-width: 450px) {
+        grid-template-columns: 130px auto;
+        grid-template-rows: auto auto fit-content(120px);
+        gap: 10px 15px;
+        grid-template-areas:
+          "iconDetail name"
+          "iconDetail numberCard"
+          "description description";
+      }
+    }
+
+    .iconDetail {
+      grid-area: iconDetail;
+      @extend %SvgForText;
+    }
+
+    .name {
+      grid-area: name;
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+    }
+
+    .numberCard {
+      grid-area: numberCard;
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      gap: 2px;
+
+      #uniqueNumber {
+        font-weight: 700;
+      }
+      @include styleSpecial.HoverColorChangesOtherElement(
+        ".buttonCopy",
+        "#uniqueNumber"
+      );
+    }
+    .description {
+      grid-area: description;
+      overflow: hidden;
+      font-weight: 500;
+    }
+  }
+}
