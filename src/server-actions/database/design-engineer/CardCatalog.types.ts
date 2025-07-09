@@ -35,7 +35,7 @@ export type TypeDataCardCatalog = {
 export type TypeRecordsCardCatalog = {
   ID: number;
   itemSequence: string;
-  suffix: string;
+  suffix: string | null;
   nameDetail: string;
   nameUser: string;
   dateCreate: Date;
@@ -47,12 +47,18 @@ export type TypeAddRecordCardCatalog = {
   message: string;
   data: {
     prefixFactory: string;
-    name: string;
     itemType: number;
     itemSequence: string;
     suffix: string | null;
-    comment: string | null;
+    name: string;
   };
+};
+
+export type TypeRecordUpdateCardCatalog = {
+  id: number;
+  suffix: string | null;
+  nameDetail: string;
+  comment: string | null;
 };
 
 // params for functional

@@ -6,6 +6,7 @@ import type {
   TypeDataCardCatalog,
   TypeRecordsCardCatalog,
   TypeAddRecordCardCatalog,
+  TypeRecordUpdateCardCatalog,
 } from "./CardCatalog.types";
 
 import type {
@@ -199,6 +200,48 @@ export const addRecordsCardCatalog = async ({
 
     return result.rows[0].result;
   } catch (error) {
+    throw new Error(`${error}`);
+  } finally {
+    client.release();
+  }
+};
+
+/**
+ * Обновляет данные в таблицы по введенному массиву 
+ */
+export const updateRecordsCardCatalog = async (
+  updates: Array<TypeRecordUpdateCardCatalog>
+): Promise<boolean> => {
+  const client = await connection.connect();
+
+  const updatesJson = JSON.stringify(updates);
+
+  const sql = `
+    WITH data AS (
+    SELECT
+      (elem ->> 'id')::int                                AS id,
+      -- если пустая строка, то NULL, иначе приводим к вашему enum
+      NULLIF(elem ->> 'suffix', '')::"EnumSuffix"         AS suffix,
+      (elem ->> 'nameDetail')                             AS nameDetail,
+      (elem ->> 'comment')                                AS comment
+    FROM jsonb_array_elements($1::jsonb) AS arr(elem)
+  )
+  UPDATE "designEngineer"."RecordsCurrentCardCatalog" AS target
+  SET
+    suffix  = data.suffix,
+    name    = data.nameDetail,
+    comment = data.comment
+  FROM data
+  WHERE target."ID" = data.id;
+  `;
+
+  try {
+    await client.query("BEGIN");
+    await client.query(sql, [updatesJson]);
+    await client.query("COMMIT");
+    return true;
+  } catch (error) {
+    await client.query("ROLLBACK");
     throw new Error(`${error}`);
   } finally {
     client.release();
