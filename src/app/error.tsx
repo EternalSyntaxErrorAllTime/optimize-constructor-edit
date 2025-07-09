@@ -20,7 +20,7 @@ const PageError: TypeErrorPage = ({ error, reset }) => {
       <Typography variant="h2" content="h1" className="title">
         Ошибка сервера 500
       </Typography>
-      <Typography variant="h4" component="pre" color="error" className="error">
+      <Typography variant="h4" component="p" color="error" className="error">
         {error.message}
       </Typography>
       <div className="containerButton">

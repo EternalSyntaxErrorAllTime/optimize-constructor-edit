@@ -38,7 +38,7 @@ const DisplayAlert: FC = () => {
       if (!exists) {
         const timeout = setTimeout(() => {
           autoCloseAlert(alr.id);
-        }, 6_000);
+        }, 9_000);
 
         setTimer((prev) => [...prev, { id: alr.id, action: timeout }]);
       }
