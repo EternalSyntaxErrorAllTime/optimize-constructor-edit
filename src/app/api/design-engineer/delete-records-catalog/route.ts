@@ -1,4 +1,3 @@
-// /app/api/design-engineer/delete-records-catalog/route.ts
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
