@@ -4,7 +4,6 @@ type PropsItemCard = {
   ID: number;
   icon?: string;
   name: string;
-  prefixFactory: string,
   itemType: string;
   description?: string;
 };

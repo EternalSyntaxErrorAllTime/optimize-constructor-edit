@@ -112,15 +112,12 @@ const TableRecords: TypeTableRecords = ({ id }) => {
 
   const rebuildingTable = useCallback(() => {
     setRow(createDataRow(data));
-    // Временное решение что бы отображалась последняя страница
-    setTimeout(() => {
-      setPaginationModel((prev) => {
-        return {
-          page: Math.max(0, Math.ceil(data.length / prev.pageSize)),
-          pageSize: prev.pageSize,
-        };
-      });
-    }, 2);
+    setPaginationModel((prev) => {
+      return {
+        page: Math.max(0, Math.ceil(data.length / prev.pageSize) - 1),
+        pageSize: prev.pageSize,
+      };
+    });
     setSelectionModel({ type: "include", ids: new Set<GridRowId>() });
   }, [data]);
 

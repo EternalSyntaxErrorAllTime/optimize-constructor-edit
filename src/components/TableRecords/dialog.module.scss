@@ -22,27 +22,8 @@
   gap: 5px;
   align-items: center;
   grid-template-areas:
-    "containerNumberCard copyNumberCard"
-    "containerCardName copyCardName";
-
-  .containerNumberCard {
-    grid-area: containerNumberCard;
-  }
-
-  .containerCardName {
-    grid-area: containerCardName;
-  }
-
-  .containerNumberCard, .containerCardName {
-    display: flex;
-    flex-direction: row;
-    gap: 15px;
-    align-items: center;
-  }
-
-  .textSupport {
-    font-weight: 500;
-  }
+    "numberCard copyNumberCard"
+    "cardName copyCardName";
 
   @include styleSpecial.HoverColorChangesOtherElement(
     ".copyNumberCard",
@@ -63,8 +44,14 @@
     border: none;
   }
 
-  .cardName, .numberCard {
-    font-weight: 800;
+  .cardName {
+    grid-area: cardName;
+    font-weight: 700;
+  }
+
+  .numberCard {
+    grid-area: numberCard;
+    font-weight: 700;
   }
 
   .copyNumberCard {

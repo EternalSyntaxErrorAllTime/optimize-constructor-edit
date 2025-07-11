@@ -1,14 +1,8 @@
-@use "@styles/status" as styleStatus;
-
 .SearchCard {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
   gap: 20px;
-
-  .loading {
-    @extend %noHaveData;
-  }
 
   .weightText {
     font-weight: 500;

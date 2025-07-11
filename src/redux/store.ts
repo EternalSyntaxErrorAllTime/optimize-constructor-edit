@@ -12,7 +12,6 @@ import {
 } from "redux-persist";
 
 import notificationAlertReducer from "./features/notificationAlert/notificationAlert";
-import searchCardCatalogReducer from "./features/searchCardCatalog/searchCardCatalog";
 import themeReducer from "./features/theme/theme";
 
 const persistConfig = {
@@ -24,7 +23,6 @@ const persistConfig = {
 const rootReducer = combineReducers({
   theme: themeReducer,
   notificationAlert: notificationAlertReducer,
-  searchCard: searchCardCatalogReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
