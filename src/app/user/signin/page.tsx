@@ -25,7 +25,7 @@ import LoginIcon from "@mui/icons-material/Login";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-import "./PageIndexSignIn.scss";
+import "./page-style.scss";
 
 const PageIndexSignIn: FC = () => {
   const dispatch = useDispatch();
