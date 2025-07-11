@@ -2,11 +2,14 @@
   "name": "optimize-constructor-edit",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack --experimental-https",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build:server": "tsc server.ts --outDir dist",
+    "start:ssl": "node server.ts"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
