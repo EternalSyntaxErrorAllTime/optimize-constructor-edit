@@ -42,7 +42,7 @@ const ResultSearchCard: TypeResultSearchCard = ({
       )}
       {itemCard.length === 0 && (
         <div className="noHaveData">
-          <Typography variant="h3" component="p" color="info">
+          <Typography variant="h2" component="p" color="primary">
             {noHaveData}
           </Typography>
         </div>
