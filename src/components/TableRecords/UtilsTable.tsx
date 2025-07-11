@@ -141,9 +141,14 @@ export const CreateOutputMessageAddElement: TypeOutputMessageAddElement = ({
 
   return (
     <div className={`${sd.containerDialog} ${sd.addOutput}`}>
-      <Typography variant="body1" component="h1" className={sd.numberCard}>
-        {numberDetail}
-      </Typography>
+      <div className={sd.containerNumberCard}>
+        <Typography variant="h6" component="p" className={sd.textSupport}>
+          Номер:
+        </Typography>
+        <Typography variant="body1" component="h1" className={sd.numberCard}>
+          {numberDetail}
+        </Typography>
+      </div>
       <Button
         onClick={() => onAction(numberDetail)}
         aria-label="copy-number-detail"
@@ -152,9 +157,16 @@ export const CreateOutputMessageAddElement: TypeOutputMessageAddElement = ({
       >
         <ContentCopyIcon />
       </Button>
-      <Typography variant="body1" component="h2" className={sd.cardName}>
-        {name}
-      </Typography>
+
+      <div className={sd.containerCardName}>
+        <Typography variant="h6" component="p" className={sd.textSupport}>
+          Название:
+        </Typography>
+        <Typography variant="body1" component="h1" className={sd.cardName}>
+          {name}
+        </Typography>
+      </div>
+
       <Button
         onClick={() => onAction(name)}
         aria-label="copy-name-detail"
