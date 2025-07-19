@@ -45,7 +45,7 @@ export const columns: GridColDef[] = [
   {
     field: "suffix",
     headerName: "Суффикс",
-    flex: 0.3,
+    flex: 0.2,
     type: "singleSelect",
     valueOptions: suffixData,
     editable: true,
@@ -65,7 +65,7 @@ export const columns: GridColDef[] = [
   {
     field: "dateCreate",
     headerName: "Дата",
-    flex: 0.4,
+    flex: 0.25,
     type: "date",
     editable: false,
   },
