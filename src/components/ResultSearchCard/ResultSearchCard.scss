@@ -10,7 +10,8 @@
   flex-direction: column;
   gap: 30px;
 
-  .noHaveData {
+  .noHaveData,
+  .loading {
     @extend %noHaveData;
   }
 

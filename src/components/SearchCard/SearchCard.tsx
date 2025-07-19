@@ -1,5 +1,5 @@
 "use client";
-
+import type { FC } from "react";
 import type { TypeRootState } from "@redux/redux.types";
 
 import {
@@ -10,7 +10,7 @@ import {
 
 import { updateDisplaySearchCard } from "@redux/features/searchCardCatalog";
 
-import { FC, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { useMediaQuery } from "@mui/material";
@@ -23,7 +23,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  CircularProgress,
 } from "@mui/material";
 import { ResultSearchCard } from "@components/ResultSearchCard";
 import { ItemCard } from "@components/ItemCard";
@@ -165,27 +164,6 @@ const SearchCard: FC = () => {
     );
   };
 
-  const RenderResultCard = () => {
-    if (whatOpen === "none") return;
-
-    if (loadingAllCard || loadingSearchCard || fetchingSearchCard) {
-      return (
-        <div className="loading">
-          <CircularProgress size="6rem" />
-        </div>
-      );
-    }
-
-    return (
-      <ResultSearchCard title={title}>
-        {whatOpen === "search" &&
-          searchCard.map((item) => <ItemCard key={item.ID} {...item} />)}
-        {whatOpen === "all-card" &&
-          allCard.map((item) => <ItemCard key={item.ID} {...item} />)}
-      </ResultSearchCard>
-    );
-  };
-
   return (
     <section className="SearchCard">
       <Typography variant="h4" component="h1" className="weightText">
@@ -298,8 +276,17 @@ const SearchCard: FC = () => {
       >
         {whatOpen === "all-card" ? "Закрыть картотеку" : "Открыть всю картотек"}
       </Button>
-
-      <RenderResultCard />
+      {whatOpen !== "none" && (
+        <ResultSearchCard
+          title={title}
+          loading={loadingAllCard || loadingSearchCard || fetchingSearchCard}
+        >
+          {whatOpen === "search" &&
+            searchCard.map((item) => <ItemCard key={item.ID} {...item} />)}
+          {whatOpen === "all-card" &&
+            allCard.map((item) => <ItemCard key={item.ID} {...item} />)}
+        </ResultSearchCard>
+      )}
     </section>
   );
 };

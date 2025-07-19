@@ -10,7 +10,14 @@ import CheckIcon from "@mui/icons-material/Check";
 
 import "./ItemCard.scss";
 
-const ItemCard: TypeItemCard = ({ ID, icon, name, prefixFactory, itemType, description }) => {
+const ItemCard: TypeItemCard = ({
+  ID,
+  icon,
+  name,
+  prefixFactory,
+  itemType,
+  description,
+}) => {
   const isMedia = useMediaQuery("(min-width: 950px)");
   const isMediaSmall = useMediaQuery("(min-width: 450px)");
 

@@ -2,8 +2,8 @@
 @use "@styles/styleSVG" as styleSVG;
 
 .ItemCard {
-  height: 120px;
-  min-height: 120px;
+  height: 115px;
+  min-height: 115px;
   width: 100%;
 
   display: grid;
@@ -43,6 +43,15 @@
     gap: 15px;
     align-items: center;
     font-weight: 700;
+
+    h1 {
+      display: -webkit-box;
+      line-clamp: 1;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
 
     @media (max-width: 450px) {
       h1,

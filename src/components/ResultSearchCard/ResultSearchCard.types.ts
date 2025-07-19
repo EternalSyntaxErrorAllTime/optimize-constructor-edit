@@ -4,6 +4,7 @@ type PropsResultSearchCard = {
   title?: string;
   noHaveData?: string;
   countDisplayElement?: number;
+  loading?: boolean;
   children: Readonly<ReactNode>;
 };
 

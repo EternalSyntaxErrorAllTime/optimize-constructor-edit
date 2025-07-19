@@ -2,12 +2,15 @@
 
 import type { TypeResultSearchCard } from "./ResultSearchCard.types";
 import type { ChangeEvent } from "react";
+import type { TypeRootState } from "@redux/redux.types";
 
 import { Children } from "react";
+import { updatePagination } from "@redux/features/searchCardCatalog";
 
-import { useState, useRef } from "react";
+import { useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
-import { Pagination, Typography } from "@mui/material";
+import { CircularProgress, Typography, Pagination } from "@mui/material";
 
 import "./ResultSearchCard.scss";
 
@@ -15,22 +18,36 @@ const ResultSearchCard: TypeResultSearchCard = ({
   title,
   noHaveData = "Нет данных",
   countDisplayElement = 5,
+  loading = false,
   children,
 }) => {
-  const [displayItem, setDisplayItem] = useState<number>(1);
+  const dispatch = useDispatch();
+  const { pagination } = useSelector(
+    (state: TypeRootState) => state.searchCard
+  );
 
   const container = useRef<HTMLDivElement>(null);
 
   const itemCard = Children.toArray(children);
 
   const handleChange = (event: ChangeEvent<unknown>, value: number) => {
-    setDisplayItem(value);
+    dispatch(updatePagination(value));
     container.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   // Данные для расчёта количества отображаемых элементов
-  const startIndex = (displayItem - 1) * countDisplayElement;
+  const startIndex = (pagination - 1) * countDisplayElement;
   const endIndex = Math.min(startIndex + countDisplayElement, itemCard.length);
+
+  if (loading) {
+    return (
+      <div className="ResultSearchCard">
+        <div className="loading">
+          <CircularProgress size="6rem" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="ResultSearchCard">
@@ -56,7 +73,7 @@ const ResultSearchCard: TypeResultSearchCard = ({
           size="medium"
           color="primary"
           count={Math.ceil(itemCard.length / countDisplayElement)}
-          page={displayItem}
+          page={pagination}
           onChange={handleChange}
         />
       )}
