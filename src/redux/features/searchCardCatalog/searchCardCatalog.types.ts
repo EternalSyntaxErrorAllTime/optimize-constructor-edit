@@ -11,9 +11,13 @@ export type TypeInputValue = {
 export type TypeSearchCardCatalog = {
   whatOpen: TypeWhatOpen;
   inputValue: TypeInputValue;
+  pagination: number;
 };
 
 export type TypeActionSearchCardCatalog = PayloadAction<{
   whatOpen: TypeWhatOpen;
   inputValue?: TypeInputValue;
 }>;
+
+
+export type TypeActionUpdatePagination = PayloadAction<number>;
