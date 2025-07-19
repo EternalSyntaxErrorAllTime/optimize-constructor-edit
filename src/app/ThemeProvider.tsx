@@ -26,10 +26,14 @@ const ThemeSettings = () => {
     const colorBlack: object = {
       mode: "dark",
       primary: {
-        main: "#9C27B0",
+        main: "#1565c0",
       },
       secondary: {
-        main: "#63196f",
+        main: "#114F96",
+      },
+      success: {
+        main: "#539156",
+        contrastText: "#ffffff",
       },
     };
 
