@@ -1,6 +1,7 @@
 import https from "https";
 import fs from "fs";
 import path from "path";
+import os from "os";
 import next from "next";
 
 const DEV = false;
@@ -19,13 +20,22 @@ const httpsOptions = {
 const PORT = Number(process.env.PORT) || 443;
 
 app.prepare().then(() => {
-  https
-    .createServer(httpsOptions, (req, res) => handle(req, res))
-    .listen(PORT, "0.0.0.0", (err?: Error) => {
-      if (err) {
-        console.error("❌ Server error:", err);
-        process.exit(1);
+  const server = https.createServer(httpsOptions, (req, res) => handle(req, res));
+  server.listen(PORT, "0.0.0.0", (err?: Error) => {
+    if (err) {
+      console.error("❌ Server error:", err);
+      process.exit(1);
+    }
+
+    const nets = os.networkInterfaces();
+    console.log(`🚀 Сервер запущен на порту ${PORT}`);
+    for (const name of Object.keys(nets)) {
+      for (const net of nets[name]!) {
+        if (net.family === "IPv4" && !net.internal) {
+          console.log(`   🔗 https://${net.address}:${PORT}`);
+        }
       }
-      console.log(`🚀 HTTPS на порту ${PORT} (локальная сеть)`);
-    });
+    }
+    console.log(`   🔗 https://localhost:${PORT}`);
+  });
 });
