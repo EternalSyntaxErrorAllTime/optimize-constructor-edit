@@ -47,11 +47,11 @@ const PageClientRecordsCardCatalog: TypePageClientCardCatalog = ({
           <Typography variant="h5" component="h2" id="uniqueNumber">
             {`${prefixFactory}.${itemType}`}
           </Typography>
-          <IconButton className="buttonCopy" onClick={onCopyNumberCard}>
+          <IconButton className="buttonCopy" onClick={onCopyNumberCard} size="large">
             <ContentCopyIcon />
           </IconButton>
         </div>
-        <Typography variant="body1" component="p" className="description">
+        <Typography variant="h6" component="p" className="description">
           {description}
         </Typography>
       </div>
