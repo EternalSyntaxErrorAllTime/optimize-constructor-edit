@@ -61,7 +61,7 @@ export const getSearchCardCatalog = async ({
 }: TypeParamsSearchCardCatalog): Promise<Array<TypeSearchCardCatalog>> => {
   const client = await connection.connect();
 
-  const sql = `SELECT "designEngineer"."SearchAll"($1, $2, $3) AS result;`;
+  const sql = `SELECT "designEngineer"."SearchCardCatalog"($1, $2, $3) AS result;`;
 
   try {
     const result = await client.query<
@@ -136,7 +136,7 @@ export const getRecordsCardCatalog = async (
       ON rccc."createBy_user_ID" = us."ID"
   WHERE 
     rccc."CardCatalog_ID" = $1
-  ORDER BY rccc."ID" ASC 
+  ORDER BY rccc."itemSequence" ASC 
   `;
 
   try {
@@ -207,7 +207,7 @@ export const addRecordsCardCatalog = async ({
 };
 
 /**
- * Обновляет данные в таблицы по введенному массиву 
+ * Обновляет данные в таблицы по введенному массиву
  */
 export const updateRecordsCardCatalog = async (
   updates: Array<TypeRecordUpdateCardCatalog>
