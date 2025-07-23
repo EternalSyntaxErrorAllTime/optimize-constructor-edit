@@ -9,6 +9,7 @@
    ```bash
    git clone https://github.com/EternalSyntaxErrorAllTime/optimize-constructor-edit
    cd optimize-constructor-edit
+   ```
 </pre>
 
 2. 🔐 Создание HTTPS-сертификата
@@ -35,6 +36,7 @@
    # NextAuth
    NEXTAUTH_URL="ссылка_на_сайт"
    AUTH_SECRET="секретный_ключ"
+   ```
 </pre>
 
 5. ⤓ Установить зависимости и запуск проекта:
@@ -43,4 +45,5 @@
    npm install
    next run build
    npm run start:ssl
+   ```
 </pre>
