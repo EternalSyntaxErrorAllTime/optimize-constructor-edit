@@ -23,7 +23,9 @@
       "@icons/*": ["public/icons/*"],
       "@image/*": ["public/image/*"],
 
+      "@api/*": ["src/app/api/*"],
       "@components/*": ["src/components/*"],
+      "@utils/*": ["src/utils/*"],
       "@redux/*": ["src/redux/*"],
       "@styles/*": ["src/styles/*"],
 
