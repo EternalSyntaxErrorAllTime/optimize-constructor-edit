@@ -1,46 +1,47 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
+import {
+  SchemeDeleteRecordsCatalog,
+  errorMessageDeleteRecordsCatalog,
+} from "./scheme";
 import { deleteRecordsCardCatalog } from "@database/design-engineer";
 
 export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
+  const body = await request.json();
 
-    if (!Array.isArray(body) || body.length === 0) {
-      return NextResponse.json(
-        { message: "Invalid request: non-empty array of IDs required." },
-        { status: 400 }
-      );
-    }
-
-    // Проверяем, что все элементы — целые положительные числа
-    const ok = body.every(
-      (id) => typeof id === "number" && Number.isInteger(id) && id > 0
+  const parse = SchemeDeleteRecordsCatalog.safeParse(body);
+  if (!parse.success) {
+    return NextResponse.json(
+      {
+        message: errorMessageDeleteRecordsCatalog(parse.error),
+        deletedIds: null,
+      },
+      { status: 400 }
     );
-    if (!ok) {
-      return NextResponse.json(
-        { message: "Invalid request: array must contain positive integers." },
-        { status: 400 }
-      );
-    }
+  }
 
-    const success = await deleteRecordsCardCatalog(body);
-
-    if (success) {
+  try {
+    const result = await deleteRecordsCardCatalog({
+      idsRecords: parse.data.idsRecords,
+      user_ID: parse.data.user_ID,
+    });
+    if (!result) {
       return NextResponse.json(
-        { message: "Items deleted successfully.", deletedIds: body },
-        { status: 200 }
-      );
-    } else {
-      return NextResponse.json(
-        { message: "Internal error during deletion.", deletedIds: body },
+        {
+          deletedIds: null,
+          message: "Ошибка при удалении (Попробуйте ещё раз позже)",
+        },
         { status: 500 }
       );
     }
-  } catch (err) {
     return NextResponse.json(
-      { message: `Internal server error: ${String(err)}` },
+      { deletedIds: null, message: "Удаление данных проведено успешно" },
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { message: `Серверная ошибка ${String(error)}.`, deletedIds: null },
       { status: 500 }
     );
   }

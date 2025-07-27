@@ -76,3 +76,8 @@ export type TypeParamForAddRecordCardCatalog = {
   createBy_user_ID: number;
   comment?: string | null;
 };
+
+export type TypeParamDeleteRecordsCardCatalog = {
+  user_ID: number;
+  idsRecords: Array<number>;
+};

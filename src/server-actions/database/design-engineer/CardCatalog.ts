@@ -12,6 +12,7 @@ import type {
 import type {
   TypeParamsSearchCardCatalog,
   TypeParamForAddRecordCardCatalog,
+  TypeParamDeleteRecordsCardCatalog,
 } from "./CardCatalog.types";
 
 import connection from "@database/connect";
@@ -128,7 +129,7 @@ export const getRecordsCardCatalog = async (
     rccc.name AS "nameDetail",
   	us.name AS "nameUser", 
     "dateCreate",
-     COALESCE(comment, '') AS comment
+    COALESCE(comment, '') AS comment
   FROM 
     "designEngineer"."RecordsCurrentCardCatalog" AS rccc
   JOIN
@@ -153,26 +154,30 @@ export const getRecordsCardCatalog = async (
 };
 
 /**
- * Удаляет записи в картотеке по полученному списку ID
+ * Удаляет записи в картотеке по полученному списку ID,
+ * при этом в сессии PG ставится GUC-переменная текущего пользователя,
  */
-export const deleteRecordsCardCatalog = async (
-  ids: Array<number | string>
-): Promise<boolean> => {
+export const deleteRecordsCardCatalog = async ({
+  user_ID,
+  idsRecords,
+}: TypeParamDeleteRecordsCardCatalog): Promise<boolean> => {
   const client = await connection.connect();
 
   const sql = `
-    DELETE FROM "designEngineer"."RecordsCurrentCardCatalog"
-    WHERE "ID" = ANY($1::int[])
+  DELETE FROM "designEngineer"."RecordsCurrentCardCatalog"
+  WHERE "ID" = ANY($1::int[])
   `;
 
   try {
+    await client.query(`SET session app.current_user_id = ${user_ID}`);
     await client.query("BEGIN");
-    await client.query(sql, [ids]);
+    await client.query(sql, [idsRecords]);
     await client.query("COMMIT");
     return true;
   } catch (error) {
     await client.query("ROLLBACK");
-    throw new Error(`${error}`);
+    console.log(error);
+    throw new Error(`Ошибка удаления: ${error}`);
   } finally {
     client.release();
   }
