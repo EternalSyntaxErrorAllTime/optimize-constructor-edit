@@ -1,15 +1,20 @@
-import type { ZodType } from "zod";
+import type { ZodType, ZodError } from "zod";
 import type { Dispatch } from "@reduxjs/toolkit";
 import type { TypeErrorTextZod } from "ru-zod";
 
 import { newAlert } from "@redux/features/notificationAlert";
+
+type TypeErrorAction = {
+  path: Array<string>;
+  errorZod: ZodError;
+};
 
 type TypeValidateZod<T> = {
   schema: ZodType<T>;
   data: T;
   dispatch: Dispatch;
   errorMessage: (error: TypeErrorTextZod["error"]) => string;
-  errorAction?: () => void;
+  errorAction?: ({ path, errorZod }: TypeErrorAction) => void;
 };
 
 /**
@@ -31,7 +36,8 @@ export const validateZod = <T>({
         severity: "warning",
       })
     );
-    errorAction?.();
+    const allPaths = result.error.issues.map((issue) => issue.path.join("."));
+    errorAction?.({ path: allPaths, errorZod: result.error });
     return null;
   }
 
