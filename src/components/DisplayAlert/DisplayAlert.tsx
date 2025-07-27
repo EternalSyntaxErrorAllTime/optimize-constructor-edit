@@ -53,6 +53,7 @@ const DisplayAlert: FC = () => {
           <Alert
             className="alert"
             severity={item.severity}
+            style={{ whiteSpace: "pre-wrap", overflowWrap: "break-word" }}
             action={
               <IconButton
                 aria-label="close"
