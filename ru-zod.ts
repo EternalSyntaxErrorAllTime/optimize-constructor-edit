@@ -15,7 +15,7 @@ export type TypeErrorTextZod = {
  * Функция для преобразование ошибок zod в текст который поймет пользователь
  */
 const errorTextZod = ({ error, dict }: TypeErrorTextZod): string => {
-  const message = prettifyError(error)
+  let message = prettifyError(error)
     .replaceAll("✖ ", "")
     .replaceAll("\n  → at", " поле →");
 
@@ -23,17 +23,12 @@ const errorTextZod = ({ error, dict }: TypeErrorTextZod): string => {
     return message;
   }
 
-  const messageDict = message
-    .split("\n")
-    .map((item) =>
-      item
-        .split(" ")
-        .map((value) => (value in dict ? dict[value] : value))
-        .join(" ")
-    )
-    .join("\n");
+  for (const [key, label] of Object.entries(dict)) {
+    const re = new RegExp(`\\b${key}\\b`, "g");
+    message = message.replace(re, label);
+  }
 
-  return messageDict;
+  return message;
 };
 
 export { errorTextZod };
