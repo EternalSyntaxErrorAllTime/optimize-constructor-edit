@@ -118,26 +118,39 @@ export const getDataCardCatalog = async (
  */
 export const getRecordsCardCatalog = async (
   id: number
-): Promise<Array<TypeRecordsCardCatalog>> => {
+): Promise<TypeRecordsCardCatalog> => {
   const client = await connection.connect();
 
   const sql = `
-  SELECT 
-    rccc."ID",
-    LPAD(rccc."itemSequence"::TEXT, 3, '0') AS "itemSequence",
-    suffix,
-    rccc.name AS "nameDetail",
-  	us.name AS "nameUser", 
-    "dateCreate",
-    COALESCE(comment, '') AS comment
-  FROM 
-    "designEngineer"."RecordsCurrentCardCatalog" AS rccc
-  JOIN
+  SELECT
+    ccc."lastRecords",
+    COALESCE(records.records, '[]') AS records
+  FROM
+    "designEngineer"."CurrentCardCatalog" AS ccc
+  LEFT JOIN LATERAL (
+    SELECT
+      json_agg(
+        json_build_object(
+          'ID',     rccc."ID",
+          'itemSequence', LPAD(rccc."itemSequence"::text, 3, '0'),
+          'suffix', rccc.suffix,
+          'nameDetail', rccc.name,
+          'nameUser', us.name,
+          'dateCreate', rccc."dateCreate",
+          'comment', COALESCE(rccc.comment, '')
+        )
+        ORDER BY rccc."itemSequence"
+      ) AS records
+    FROM
+      "designEngineer"."RecordsCurrentCardCatalog" AS rccc
+    JOIN
       "usersData"."Users" AS us
       ON rccc."createBy_user_ID" = us."ID"
-  WHERE 
-    rccc."CardCatalog_ID" = $1
-  ORDER BY rccc."itemSequence" ASC 
+    WHERE
+      rccc."CardCatalog_ID" = ccc."ID"
+  ) AS records ON true
+  WHERE
+    ccc."ID" = $1;
   `;
 
   try {
@@ -145,7 +158,7 @@ export const getRecordsCardCatalog = async (
       id,
     ]);
 
-    return result.rows;
+    return result.rows[0];
   } catch (error) {
     throw new Error(`${error}`);
   } finally {
@@ -215,11 +228,11 @@ export const addRecordsCardCatalog = async ({
  * Обновляет данные в таблицы по введенному массиву
  */
 export const updateRecordsCardCatalog = async (
-  updates: Array<TypeRecordUpdateCardCatalog>
+  updates: TypeRecordUpdateCardCatalog
 ): Promise<boolean> => {
   const client = await connection.connect();
 
-  const updatesJson = JSON.stringify(updates);
+  const updatesJson = JSON.stringify(updates.updates);
 
   const sql = `
     WITH data AS (
@@ -241,6 +254,7 @@ export const updateRecordsCardCatalog = async (
   `;
 
   try {
+    await client.query(`SET session app.current_user_id = ${updates.user_ID}`);
     await client.query("BEGIN");
     await client.query(sql, [updatesJson]);
     await client.query("COMMIT");

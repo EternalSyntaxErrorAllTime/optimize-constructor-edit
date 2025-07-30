@@ -33,13 +33,16 @@ export type TypeDataCardCatalog = {
 };
 
 export type TypeRecordsCardCatalog = {
-  ID: number;
-  itemSequence: string;
-  suffix: string | null;
-  nameDetail: string;
-  nameUser: string;
-  dateCreate: Date;
-  comment: string;
+  lastRecords: number;
+  records: Array<{
+    ID: number;
+    itemSequence: string;
+    suffix: string | null;
+    nameDetail: string;
+    nameUser: string;
+    dateCreate: Date;
+    comment: string;
+  }>;
 };
 
 export type TypeAddRecordCardCatalog = {
@@ -55,10 +58,13 @@ export type TypeAddRecordCardCatalog = {
 };
 
 export type TypeRecordUpdateCardCatalog = {
-  id: number;
-  suffix: string | null;
-  nameDetail: string;
-  comment: string | null;
+  user_ID: number;
+  updates: Array<{
+    id: number;
+    suffix: string | null;
+    nameDetail: string;
+    comment: string | null;
+  }>;
 };
 
 // params for functional
