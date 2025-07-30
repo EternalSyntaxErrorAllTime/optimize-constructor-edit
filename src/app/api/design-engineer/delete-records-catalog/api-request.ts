@@ -1,4 +1,4 @@
-import { TypeParamDeleteRecordsCardCatalog } from "@database/design-engineer";
+import type { TypeSchemeDeleteRecordsCatalog } from "./scheme";
 
 import axios from "axios";
 
@@ -11,14 +11,14 @@ type ResponseDeleteRecordsCatalog = {
 export const requestDeleteRecordsCatalog = async ({
   user_ID,
   idsRecords,
-}: TypeParamDeleteRecordsCardCatalog): Promise<ResponseDeleteRecordsCatalog> => {
+}: TypeSchemeDeleteRecordsCatalog): Promise<ResponseDeleteRecordsCatalog> => {
   try {
     const result = await axios.post<
       Omit<ResponseDeleteRecordsCatalog, "status">
     >(
       "/api/design-engineer/delete-records-catalog",
       { user_ID, idsRecords },
-      { timeout: 5_000 }
+      { timeout: 5_000, validateStatus: (status) => status < 600 }
     );
     return { ...result.data, status: result.status };
   } catch (error) {
