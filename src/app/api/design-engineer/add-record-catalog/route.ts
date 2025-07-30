@@ -22,9 +22,10 @@ export async function POST(request: NextRequest) {
 
   try {
     const result = await addRecordsCardCatalog(parse.data);
+
     if (!result.status) {
       return NextResponse.json(
-        { data: [], message: result.message },
+        { data: null, message: result.message },
         { status: 500 }
       );
     }
