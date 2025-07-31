@@ -2,6 +2,7 @@ import type {
   TypeRowDeleteElement,
   TypeOutputMessageAddElement,
   TypeRowData,
+  TypeEditMessageElement,
   TypeEditRowElement,
 } from "./TableRecords.types";
 import type { TypeRecordsCardCatalog } from "@database/design-engineer";
@@ -22,8 +23,7 @@ import {
 } from "@mui/material";
 
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import EastIcon from "@mui/icons-material/East";
-import CommentIcon from "@mui/icons-material/Comment";
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 import sd from "./dialog.module.scss";
 
@@ -78,7 +78,7 @@ export const columns: GridColDef[] = [
 ];
 
 export const createDataRow = (
-  data: Array<TypeRecordsCardCatalog>
+  data: TypeRecordsCardCatalog["records"]
 ): Array<TypeRowData> => {
   return data.map((item) => ({
     id: item.ID,
@@ -103,8 +103,8 @@ export const CreateRowDeleteElement: TypeRowDeleteElement = ({
 }) => {
   return (
     <TableRow>
-      <TableCell align="center">{nameDetail}</TableCell>
       <TableCell align="center">{uniqueNumber}</TableCell>
+      <TableCell align="center">{nameDetail}</TableCell>
       <TableCell align="center">{nameUser}</TableCell>
     </TableRow>
   );
@@ -112,18 +112,28 @@ export const CreateRowDeleteElement: TypeRowDeleteElement = ({
 
 export const CreateTableDeleteElement: TypeLayout = ({ children }) => {
   return (
+    <>
     <TableContainer className={sd.containerDialog}>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell align="center">Название</TableCell>
             <TableCell align="center">Номер</TableCell>
+            <TableCell align="center">Название</TableCell>
             <TableCell align="center">Создатель</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>{children}</TableBody>
       </Table>
     </TableContainer>
+    <Typography
+        variant="body1"
+        component="p"
+        color="info"
+        className={sd.textEdit}
+      >
+        Комментарии не указаны.
+      </Typography>
+    </>
   );
 };
 
@@ -179,29 +189,21 @@ export const CreateOutputMessageAddElement: TypeOutputMessageAddElement = ({
   );
 };
 
-export const CreateEditRowElement: TypeEditRowElement = ({
-  oldData,
-  newData,
-}) => {
+export const CreateEditRowElement: TypeEditRowElement = ({ data }) => {
   return (
     <TableRow>
-      <TableCell align="center">{`${oldData.itemSequence}${
-        oldData.suffix || ""
-      } ${oldData.nameDetail}`}</TableCell>
-      <TableCell align="center">
-        <EastIcon />
-      </TableCell>
-      <TableCell align="center">
-        <div className={sd.textCell}>
-          {`${newData.itemSequence}${newData.suffix} ${newData.nameDetail}`}
-          {oldData.comment !== newData.comment.trim() && <CommentIcon />}
-        </div>
-      </TableCell>
+      <TableCell align="center">{`${data.itemSequence}${
+        data.suffix || ""
+      }`}</TableCell>
+      <TableCell align="center">{data.nameDetail}</TableCell>
     </TableRow>
   );
 };
 
-export const CreateEditMessageElement: TypeLayout = ({ children }) => {
+export const CreateEditMessageElement: TypeEditMessageElement = ({
+  oldData,
+  newData,
+}) => {
   return (
     <>
       <TableContainer className={sd.containerDialog}>
@@ -209,13 +211,50 @@ export const CreateEditMessageElement: TypeLayout = ({ children }) => {
           <TableHead>
             <TableRow>
               <TableCell align="center">Старые</TableCell>
-              <TableCell align="center"></TableCell>
+              <TableCell align="center" style={{width: "0px"}} width={"0px"}></TableCell>
               <TableCell align="center">Новые</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>{children}</TableBody>
+          <TableBody>
+            <TableRow>
+              <TableCell>
+                <Table size="small" aria-label="nested-old">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center">
+                        <Typography variant="subtitle2">Номер</Typography>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Typography variant="subtitle2">Название</Typography>
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>{oldData}</TableBody>
+                </Table>
+              </TableCell>
+              <TableCell width={"0px"}>
+                <ArrowForwardIcon/>
+              </TableCell>
+              <TableCell>
+                <Table size="small" aria-label="nested-new">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center">
+                        <Typography variant="subtitle2">Номер</Typography>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Typography variant="subtitle2">Название</Typography>
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>{newData}</TableBody>
+                </Table>
+              </TableCell>
+            </TableRow>
+          </TableBody>
         </Table>
       </TableContainer>
+
       <Typography
         variant="body1"
         component="p"

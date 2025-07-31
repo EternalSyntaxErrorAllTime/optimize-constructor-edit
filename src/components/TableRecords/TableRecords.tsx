@@ -11,12 +11,29 @@ import type {
   GridCellParams,
 } from "@mui/x-data-grid";
 
+import { validateZod } from "@utils/validateZod";
+import { suffixData } from "constValue";
+
+import { requestRecordsCardCatalog } from "@api/design-engineer/records-card-catalog";
+
 import {
-  requestDataCardCatalog,
-  requestDeleteRecordsCatalog,
+  SchemeAddRecordCatalog,
+  errorMessageAddRecordCatalog,
   requestAddRecordCatalog,
-  requestEditRecordCatalog,
-} from "./apiRequest";
+} from "@api/design-engineer/add-record-catalog";
+
+import {
+  SchemeDeleteRecordsCatalog,
+  errorMessageDeleteRecordsCatalog,
+  requestDeleteRecordsCatalog,
+} from "@api/design-engineer/delete-records-catalog";
+
+import {
+  SchemeUpdateRecordCatalog,
+  errorMessageUpdateRecordCatalog,
+  requestUpdateRecordCatalog,
+} from "@api/design-engineer/update-record-catalog";
+
 import { columns, createDataRow, initPagination } from "./UtilsTable";
 import {
   CreateTableDeleteElement,
@@ -27,12 +44,11 @@ import {
 } from "./UtilsTable";
 
 import { newAlert } from "@redux/features/notificationAlert";
-import { suffixData } from "constValue";
 
 import { useSession } from "next-auth/react";
 import { useDispatch } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useMediaQuery } from "@mui/material";
 
 import {
@@ -61,15 +77,16 @@ import CheckIcon from "@mui/icons-material/Check";
 import "./TableRecords.scss";
 import sd from "./dialog.module.scss";
 
-import type { TypeRecordsCardCatalog } from "@database/design-engineer";
-
 const TableRecords: TypeTableRecords = ({ id }) => {
   const { data: session } = useSession();
 
   const dispatch = useDispatch();
-
   const {
-    data = [],
+    data = {
+      data: { lastRecords: 999, records: [] },
+      message: "",
+      status: 102,
+    },
     isLoading,
     isError,
     error,
@@ -77,7 +94,7 @@ const TableRecords: TypeTableRecords = ({ id }) => {
     isSuccess,
     refetch,
   } = useQuery({
-    queryFn: () => requestDataCardCatalog(id),
+    queryFn: () => requestRecordsCardCatalog(id),
     queryKey: ["records-card-catalog", id],
     refetchOnWindowFocus: false,
     refetchOnMount: true,
@@ -111,12 +128,15 @@ const TableRecords: TypeTableRecords = ({ id }) => {
   });
 
   const rebuildingTable = useCallback(() => {
-    setRow(createDataRow(data));
+    setRow(createDataRow(data.data.records));
     // Временное решение что бы отображалась последняя страница
     setTimeout(() => {
       setPaginationModel((prev) => {
         return {
-          page: Math.max(0, Math.ceil(data.length / prev.pageSize)),
+          page: Math.max(
+            0,
+            Math.ceil(data.data.records.length / prev.pageSize)
+          ),
           pageSize: prev.pageSize,
         };
       });
@@ -131,7 +151,9 @@ const TableRecords: TypeTableRecords = ({ id }) => {
 
   const colorCellForEdit = (params: GridCellParams<TypeRowData>) => {
     // Текущие данные из бд
-    const currentRows = data.find((record) => record.ID === params.row.id);
+    const currentRows = data.data.records.find(
+      (record) => record.ID === params.row.id
+    );
 
     if (!currentRows) return "";
 
@@ -159,6 +181,19 @@ const TableRecords: TypeTableRecords = ({ id }) => {
     return "";
   };
 
+  const infoAdd = useMemo(() => {
+    const used = new Set<number>(
+      data.data.records.map((r) => parseInt(r.itemSequence, 10))
+    );
+
+    for (let seq = data.data.lastRecords + 1; seq <= 999; seq++) {
+      if (!used.has(seq)) {
+        return false;
+      }
+    }
+    return true;
+  }, [data]);
+
   const onAdd = () => {
     setAddState({ isError: false, name: "", suffix: "", comment: "" });
     setOpenDialogAdd(true);
@@ -168,27 +203,37 @@ const TableRecords: TypeTableRecords = ({ id }) => {
     setAddState((prev) => {
       return { ...prev, isError: false };
     });
-    if (addState.name.length === 0) {
-      setAddState((prev) => {
-        return { ...prev, isError: true };
-      });
-      return;
-    }
 
-    const data = {
-      CardCatalog_ID: id,
-      suffix: addState.suffix || null,
-      name: addState.name,
-      createBy_user_ID: Number(session?.user.id),
-      comment: addState.comment || null,
-    };
+    const parse = validateZod({
+      schema: SchemeAddRecordCatalog,
+      data: {
+        CardCatalog_ID: id,
+        createBy_user_ID: Number(session?.user.id),
+        ...addState,
+      },
+      errorMessage: errorMessageAddRecordCatalog,
+      dispatch: dispatch,
+      errorAction: ({ path }) => {
+        if (path?.includes("name")) {
+          setAddState((prev) => {
+            return { ...prev, isError: true };
+          });
+        }
+      },
+    });
+
+    if (!parse) return;
 
     const request = async () => {
-      const { status, message, output } = await requestAddRecordCatalog(data);
+      const { status, message, data } = await requestAddRecordCatalog(parse);
       dispatch(
-        newAlert({ message: message, severity: status ? "success" : "error" })
+        newAlert({
+          message: message,
+          severity:
+            status === 400 ? "warning" : status === 200 ? "success" : "error",
+        })
       );
-      if (status && output !== undefined) {
+      if (status === 200 && data !== null) {
         setOpenDialogAdd(false);
 
         const copyText = (value: string) => {
@@ -205,7 +250,7 @@ const TableRecords: TypeTableRecords = ({ id }) => {
           isOpen: true,
           title: "Успешно зарегистрированные данные!",
           message: (
-            <CreateOutputMessageAddElement {...output} onAction={copyText} />
+            <CreateOutputMessageAddElement {...data} onAction={copyText} />
           ),
           confirmation: closeDialog,
           confirmationText: "Ок",
@@ -219,7 +264,7 @@ const TableRecords: TypeTableRecords = ({ id }) => {
   };
 
   const onEdit = () => {
-    if (data.length !== row.length) {
+    if (data.data.records.length !== row.length) {
       dispatch(
         newAlert({
           message: "Проблема с данными попробуйте перезапустить страницу!",
@@ -229,44 +274,35 @@ const TableRecords: TypeTableRecords = ({ id }) => {
       return;
     }
 
-    let errorData = false;
-    const original: Array<TypeRecordsCardCatalog> = [];
+    const original = [];
     const editRow: Array<TypeRowData> = [];
 
-    for (let i = 0; i < data.length; i++) {
+    for (let i = 0; i < data.data.records.length; i++) {
       if (row[i].nameDetail.trim().length === 0) {
-        errorData = true;
-        break;
+        dispatch(
+          newAlert({
+            message:
+              "Данные не могут быть изменены!\nВ таблицы не может `Название детали` быть пустым",
+            severity: "error",
+          })
+        );
+        return;
       }
 
       if (
-        data[i].nameDetail !== row[i].nameDetail.trim() ||
-        data[i].suffix !== (row[i].suffix || null) ||
-        data[i].comment !== row[i].comment.trim()
+        data.data.records[i].nameDetail !== row[i].nameDetail.trim() ||
+        data.data.records[i].suffix !== (row[i].suffix || null) ||
+        data.data.records[i].comment !== row[i].comment.trim()
       ) {
         editRow.push(row[i]);
-        original.push(data[i]);
+        original.push(data.data.records[i]);
       }
     }
 
-    if (errorData) {
-      dispatch(
-        newAlert({
-          message: "Данные не могут быть изменены!",
-          severity: "warning",
-        })
-      );
-      dispatch(
-        newAlert({
-          message: "В таблицы не может `Название детали` быть пустым!",
-          severity: "error",
-        })
-      );
-      return;
-    }
-
     if (editRow.length === 0) {
-      dispatch(newAlert({ message: "Не чего изменять!", severity: "warning" }));
+      dispatch(
+        newAlert({ message: "В таблицы не чего изменять", severity: "warning" })
+      );
       return;
     }
 
@@ -274,15 +310,14 @@ const TableRecords: TypeTableRecords = ({ id }) => {
       isOpen: true,
       title: "Вы уверены изменить данные?",
       message: (
-        <CreateEditMessageElement>
-          {original.map((el, i) => (
-            <CreateEditRowElement
-              oldData={el}
-              newData={editRow[i]}
-              key={`EditRowElement-${el.ID}`}
-            />
+        <CreateEditMessageElement
+          oldData={original.map((el) => (
+            <CreateEditRowElement data={el} key={`EditRowElement-${el.ID}`} />
           ))}
-        </CreateEditMessageElement>
+          newData={editRow.map((el) => (
+            <CreateEditRowElement data={el} key={`EditRowElement-${el.id}`} />
+          ))}
+        />
       ),
       confirmation: () => confirmationEdit(editRow),
       confirmationText: "Изменить",
@@ -292,10 +327,25 @@ const TableRecords: TypeTableRecords = ({ id }) => {
   };
 
   const confirmationEdit = (editRow: Array<TypeRowData>) => {
+    const parse = validateZod({
+      schema: SchemeUpdateRecordCatalog,
+      data: { user_ID: Number(session?.user.id), updates: editRow },
+      errorMessage: errorMessageUpdateRecordCatalog,
+      dispatch: dispatch,
+      errorAction: () => closeDialog(),
+    });
+
+    if (!parse) return;
+
     const request = async () => {
-      const { status, message } = await requestEditRecordCatalog(editRow);
+      const { status, message } = await requestUpdateRecordCatalog(parse);
+
       dispatch(
-        newAlert({ message: message, severity: status ? "success" : "error" })
+        newAlert({
+          message: message,
+          severity:
+            status === 400 ? "warning" : status === 200 ? "success" : "error",
+        })
       );
       closeDialog();
       await refetch();
@@ -308,7 +358,7 @@ const TableRecords: TypeTableRecords = ({ id }) => {
 
     const message = (
       <CreateTableDeleteElement>
-        {data
+        {data.data.records
           .filter((item) => Array.from(selectionModel.ids).includes(item.ID))
           .map(({ ID, nameDetail, itemSequence, suffix, nameUser }) => (
             <CreateRowDeleteElement
@@ -334,14 +384,26 @@ const TableRecords: TypeTableRecords = ({ id }) => {
 
   const confirmationDelete = () => {
     if (!selectionModel?.ids || selectionModel?.ids.size === 0) return;
-
     const id = Array.from(selectionModel.ids, (id) => Number(id));
 
-    const request = async () => {
-      const { status, message } = await requestDeleteRecordsCatalog(id);
+    const parse = validateZod({
+      schema: SchemeDeleteRecordsCatalog,
+      data: { user_ID: Number(session?.user.id), idsRecords: id },
+      errorMessage: errorMessageDeleteRecordsCatalog,
+      dispatch: dispatch,
+      errorAction: () => closeDialog(),
+    });
 
+    if (!parse) return;
+
+    const request = async () => {
+      const { status, message } = await requestDeleteRecordsCatalog(parse);
       dispatch(
-        newAlert({ message: message, severity: status ? "success" : "error" })
+        newAlert({
+          message: message,
+          severity:
+            status === 400 ? "warning" : status === 200 ? "success" : "error",
+        })
       );
       closeDialog();
       await refetch();
@@ -370,7 +432,7 @@ const TableRecords: TypeTableRecords = ({ id }) => {
     );
   }
 
-  if (isError) {
+  if (isError || data.status >= 400) {
     return (
       <div className="TableRecords">
         <div className="isOtherStatus">
@@ -378,7 +440,7 @@ const TableRecords: TypeTableRecords = ({ id }) => {
             Произошла ошибка в получении информации.
           </Typography>
           <Typography variant="h4" component="h1" color="error">
-            {error?.message}
+            {data.status >= 400 ? data.message : error?.message}
           </Typography>
           <Button
             endIcon={<RefreshIcon />}
@@ -415,13 +477,17 @@ const TableRecords: TypeTableRecords = ({ id }) => {
       </div>
 
       <div className="containerButton">
-        <Button
-          onClick={onAdd}
-          endIcon={isMedia && <AddIcon />}
-          loading={isFetching}
-        >
-          Добавить
-        </Button>
+        <span title={infoAdd ? "Нет свободных мест" : "Добавить новую запись"}>
+          <Button
+            onClick={onAdd}
+            endIcon={isMedia && <AddIcon />}
+            loading={isFetching}
+            disabled={infoAdd}
+            className="addButton"
+          >
+            Добавить
+          </Button>
+        </span>
         <div className="spacer"></div>
         <Button
           onClick={async () => await refetch()}
@@ -453,7 +519,12 @@ const TableRecords: TypeTableRecords = ({ id }) => {
         )}
       </div>
 
-      <Dialog open={dataDialog.isOpen} disableEscapeKeyDown={true}>
+      <Dialog
+        open={dataDialog.isOpen}
+        disableEscapeKeyDown={true}
+        fullWidth
+        maxWidth="md"
+      >
         <DialogTitle>{dataDialog.title}</DialogTitle>
         <DialogContent>{dataDialog.message}</DialogContent>
         <DialogActions style={{ gap: "10px" }}>

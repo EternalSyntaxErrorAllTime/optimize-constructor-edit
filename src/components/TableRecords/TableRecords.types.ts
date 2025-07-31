@@ -13,7 +13,8 @@ export type PropsTableRecords = {
 export type TypeTableRecords = FC<PropsTableRecords>;
 
 // Table
-export interface TypeRowData extends Omit<TypeRecordsCardCatalog, "ID"> {
+export interface TypeRowData
+  extends Omit<TypeRecordsCardCatalog["records"][number], "ID"> {
   id: number;
 }
 
@@ -45,7 +46,11 @@ export type TypeOutputMessageAddElement = FC<
 >;
 
 // Support component with - edit
+export type TypeEditMessageElement = FC<{
+  oldData: ReactNode;
+  newData: ReactNode;
+}>;
+
 export type TypeEditRowElement = FC<{
-  oldData: TypeRecordsCardCatalog;
-  newData: TypeRowData;
+  data: TypeRecordsCardCatalog["records"][number] | TypeRowData;
 }>;
