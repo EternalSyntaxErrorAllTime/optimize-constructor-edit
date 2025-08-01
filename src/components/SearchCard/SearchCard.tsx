@@ -2,15 +2,17 @@
 import type { FC } from "react";
 import type { TypeRootState } from "@redux/redux.types";
 
+import { requestAllCardCatalog } from "@api/design-engineer/all-card-catalog";
+import { requestPrefixFactory } from "@api/public/prefix-factory";
 import {
-  requestPrefixFactory,
-  requestALlCardCatalog,
+  SchemeSearchCardCatalog,
   requestSearchCardCatalog,
-} from "./apiRequest";
+} from "@api/design-engineer/search-card-catalog";
 
+import { newAlert } from "@redux/features/notificationAlert";
 import { updateDisplaySearchCard } from "@redux/features/searchCardCatalog";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { useMediaQuery } from "@mui/material";
@@ -24,8 +26,8 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import { ResultSearchCard } from "@components/ResultSearchCard";
-import { ItemCard } from "@components/ItemCard";
+import { ResultSearchCard } from "@components/SearchCard/_components";
+import { ItemCard } from "@components/SearchCard/_components";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
@@ -50,8 +52,11 @@ const SearchCard: FC = () => {
     gcTime: Infinity,
   });
 
-  const { data: allCard = [], isLoading: loadingAllCard } = useQuery({
-    queryFn: requestALlCardCatalog,
+  const {
+    data: allCard = { data: [], message: "", status: 103 },
+    isLoading: loadingAllCard,
+  } = useQuery({
+    queryFn: requestAllCardCatalog,
     queryKey: ["all-card-catalog"],
     refetchOnWindowFocus: false,
     refetchOnMount: false,
@@ -61,16 +66,16 @@ const SearchCard: FC = () => {
   });
 
   const {
-    data: searchCard = [],
+    data: searchCard = { status: 103, message: "", data: [] },
     isLoading: loadingSearchCard,
     isFetching: fetchingSearchCard,
     refetch: searchRefetch,
   } = useQuery({
     queryFn: () =>
       requestSearchCardCatalog({
-        mainSearch: mainSearch.trim(),
-        prefix,
-        uniqueNumber,
+        main_search: mainSearch.trim() || undefined,
+        prefix_factory: prefix || undefined,
+        item_type: uniqueNumber || undefined,
       }),
     queryKey: ["search-card-catalog"],
     refetchOnWindowFocus: false,
@@ -107,8 +112,21 @@ const SearchCard: FC = () => {
 
   const onSearchCard = () => {
     setErrorInput(false);
-    if (mainSearch.trim() === "" && prefix === 0 && uniqueNumber === "") {
-      setErrorInput(true);
+
+    const result = SchemeSearchCardCatalog.safeParse({
+      main_search: mainSearch.trim() || undefined,
+      prefix_factory: prefix || undefined,
+      item_type: uniqueNumber || undefined,
+    });
+
+    if (!result.success) {
+      if (
+        result.error.issues
+          .map((issue) => issue.path.join("."))
+          .includes("noInput")
+      ) {
+        setErrorInput(true);
+      }
       return;
     }
 
@@ -123,7 +141,7 @@ const SearchCard: FC = () => {
     dispatch(
       updateDisplaySearchCard({
         whatOpen: "search",
-        inputValue: { mainSearch, prefix, uniqueNumber },
+        inputValue: { mainSearch: mainSearch.trim(), prefix, uniqueNumber },
       })
     );
     setTitle("Найденные карточки:");
@@ -163,6 +181,28 @@ const SearchCard: FC = () => {
       })
     );
   };
+
+  useEffect(() => {
+    if (searchCard.status >= 400)
+      dispatch(
+        newAlert({
+          message: searchCard.message,
+          severity: searchCard.status === 400 ? "warning" : "error",
+        })
+      );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchCard]);
+
+  useEffect(() => {
+    if (allCard.status >= 400)
+      dispatch(
+        newAlert({
+          message: allCard.message,
+          severity: allCard.status === 400 ? "warning" : "error",
+        })
+      );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allCard]);
 
   return (
     <section className="SearchCard">
@@ -282,9 +322,9 @@ const SearchCard: FC = () => {
           loading={loadingAllCard || loadingSearchCard || fetchingSearchCard}
         >
           {whatOpen === "search" &&
-            searchCard.map((item) => <ItemCard key={item.ID} {...item} />)}
+            searchCard.data.map((item) => <ItemCard key={item.ID} {...item} />)}
           {whatOpen === "all-card" &&
-            allCard.map((item) => <ItemCard key={item.ID} {...item} />)}
+            allCard.data.map((item) => <ItemCard key={item.ID} {...item} />)}
         </ResultSearchCard>
       )}
     </section>
