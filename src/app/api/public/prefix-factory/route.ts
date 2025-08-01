@@ -2,10 +2,11 @@
 
 import { getPrefixFactory } from "@database/public";
 
+import { NextResponse } from "next/server";
+
 export async function GET() {
   const result = await getPrefixFactory();
-
-  return new Response(JSON.stringify(result), {
+  return NextResponse.json(result, {
     status: 200,
     headers: {
       "Content-Type": "application/json",
