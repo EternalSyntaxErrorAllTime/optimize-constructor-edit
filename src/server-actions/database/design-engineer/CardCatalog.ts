@@ -20,9 +20,7 @@ import connection from "@database/connect";
 /**
  * Получает все карточки имеющиеся в картотеке
  */
-export const getALlCardCatalog = async (): Promise<
-  Array<TypeAllCardCatalog>
-> => {
+export const getALlCardCatalog = async (): Promise<TypeAllCardCatalog> => {
   const client = await connection.connect();
 
   const sql = `
@@ -42,8 +40,7 @@ export const getALlCardCatalog = async (): Promise<
   `;
 
   try {
-    const result = await client.query<TypeAllCardCatalog>(sql);
-
+    const result = await client.query<TypeAllCardCatalog[number]>(sql);
     return result.rows;
   } catch (error) {
     throw new Error(` ${error}`);
@@ -59,14 +56,14 @@ export const getSearchCardCatalog = async ({
   mainSearch = null,
   prefixFactory = null,
   itemType = null,
-}: TypeParamsSearchCardCatalog): Promise<Array<TypeSearchCardCatalog>> => {
+}: TypeParamsSearchCardCatalog): Promise<TypeSearchCardCatalog | null> => {
   const client = await connection.connect();
 
   const sql = `SELECT "designEngineer"."SearchCardCatalog"($1, $2, $3) AS result;`;
 
   try {
     const result = await client.query<
-      { result: Array<TypeSearchCardCatalog> },
+      { result: TypeSearchCardCatalog | null },
       [string | null, number | null, string | null]
     >(sql, [mainSearch, prefixFactory, itemType]);
 

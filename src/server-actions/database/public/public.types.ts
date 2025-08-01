@@ -1,4 +1,4 @@
-export type TypePrefixFactory = {
+export type TypePrefixFactory = Array<{
   ID: number;
   name: string;
-};
+}>;

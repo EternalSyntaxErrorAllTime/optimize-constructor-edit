@@ -12,14 +12,14 @@ export type TypeCardCatalog = {
   lastRecords: number; // - for old card catalog
 };
 
-export type TypeAllCardCatalog = {
+export type TypeAllCardCatalog = Array<{
   ID: number;
   prefixFactory: string;
   itemType: string;
   name: string;
   description?: string;
   icon?: string;
-};
+}>;
 
 export type TypeSearchCardCatalog = TypeAllCardCatalog;
 
