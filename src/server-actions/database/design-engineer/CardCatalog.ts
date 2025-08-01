@@ -36,8 +36,7 @@ export const getALlCardCatalog = async (): Promise<TypeAllCardCatalog> => {
   JOIN
     public."PrefixFactory" AS pf
     ON ccc."prefixFactory_ID" = pf."ID"
-  ORDER BY ccc."ID" ASC;
-  `;
+  ORDER BY (ccc."itemType")::INTEGER DESC;`;
 
   try {
     const result = await client.query<TypeAllCardCatalog[number]>(sql);
