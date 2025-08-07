@@ -3,14 +3,20 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 import next from "next";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const DEV = false;
 const app = next({ dev: DEV });
 const handle = app.getRequestHandler();
 
 const CERT_DIR = process.env.CERT_DIR ?? "./certs";
-const KEY_PATH = path.join(CERT_DIR, "privkey.pem");
-const CRT_PATH = path.join(CERT_DIR, "fullchain.pem");
+const KEY_PATH = path.join(CERT_DIR, process.env.KEY_CERT ?? "privkey.pem");
+const CRT_PATH = path.join(
+  CERT_DIR,
+  process.env.DOMAIN_CERT ?? "fullchain.pem"
+);
 
 const httpsOptions = {
   key: fs.readFileSync(KEY_PATH),
@@ -20,7 +26,9 @@ const httpsOptions = {
 const PORT = Number(process.env.PORT) || 443;
 
 app.prepare().then(() => {
-  const server = https.createServer(httpsOptions, (req, res) => handle(req, res));
+  const server = https.createServer(httpsOptions, (req, res) =>
+    handle(req, res)
+  );
   server.listen(PORT, "0.0.0.0", (err?: Error) => {
     if (err) {
       console.error("❌ Server error:", err);
